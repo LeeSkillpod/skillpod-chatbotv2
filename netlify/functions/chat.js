@@ -1,36 +1,31 @@
+// netlify/functions/chat.js
+import OpenAI from "openai";
 
-const { Configuration, OpenAIApi } = require("openai");
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
 
-exports.handler = async function (event, context) {
+export default async (req, context) => {
   try {
-    const { message } = JSON.parse(event.body);
-    const configuration = new Configuration({
-      apiKey: process.env.OPENAI_API_KEY,
-    });
+    const body = await req.json();
 
-    const openai = new OpenAIApi(configuration);
-
-    const response = await openai.createChatCompletion({
-      model: "gpt-4",
+    const chatCompletion = await openai.chat.completions.create({
+      model: "gpt-4", // or "gpt-3.5-turbo" if needed
       messages: [
-        {
-          role: "user",
-          content: message,
-        },
+        { role: "system", content: "You are a helpful assistant." },
+        { role: "user", content: body.message },
       ],
-      temperature: 0.7,
     });
 
-    const reply = response.data.choices[0].message.content;
-    return {
-      statusCode: 200,
-      body: JSON.stringify({ reply }),
-    };
+    return new Response(
+      JSON.stringify({ reply: chatCompletion.choices[0].message.content }),
+      { headers: { "Content-Type": "application/json" } }
+    );
   } catch (error) {
-    console.error("OpenAI API error:", error.response ? error.response.data : error.message);
-    return {
-      statusCode: 500,
-      body: JSON.stringify({ reply: "Sorry, something went wrong. Please try again." }),
-    };
+    console.error("OpenAI API error:", error);
+    return new Response(
+      JSON.stringify({ reply: "Sorry, something went wrong." }),
+      { status: 500 }
+    );
   }
 };
