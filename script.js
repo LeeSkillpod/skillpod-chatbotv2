@@ -32,6 +32,6 @@ async function sendMessage() {
 
 // Start with a simple prompt to trigger the GPT to ask its first question
 window.onload = () => {
-  document.getElementById("user-input").value = "I'd like a team tool please";
+  document.getElementById("user-input").value = "Hello";
   sendMessage();
 };
