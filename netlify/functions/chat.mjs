@@ -46,4 +46,38 @@ Use Bloom’s Taxonomy to shape outcomes with active verbs.
 📄 Generate a one-page activity plan with:
 - Activity Name
 - ⭐ Why this activity matters
-- 🎯 What your team
+- 🎯 What your team will get from this (3–4 Bloom-aligned outcomes)
+- 🧰 What you’ll need (list resources or say “None”)
+- ✅ Quick Fire Activity OR 🕐 Team Workshop
+- 💬 Support for First-time Facilitators (encouragement)
+- 🧠 What’s Next?
+💡 Want to tweak this activity or try another one? Just say the word!
+`,
+        },
+        {
+          role: "user",
+          content: body.message || "Hello",
+        },
+      ],
+    });
+
+    return new Response(
+      JSON.stringify({
+        reply: chatCompletion.choices[0].message.content,
+      }),
+      {
+        headers: { "Content-Type": "application/json" },
+        status: 200,
+      }
+    );
+  } catch (error) {
+    console.error("OpenAI API error:", error);
+    return new Response(
+      JSON.stringify({ reply: "Sorry, something went wrong." }),
+      {
+        headers: { "Content-Type": "application/json" },
+        status: 500,
+      }
+    );
+  }
+};
